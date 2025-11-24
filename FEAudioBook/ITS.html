@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITS</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="./CSS/Home.css">
+    <link rel="stylesheet" href="./CSS/ProgressBar.css">
+    <link rel="stylesheet" href="./CSS/PlayPauseButton.css">
+    <style>
+        .image-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .image-preview img {
+            width: 100%;
+            max-width: 350px;
+            height: auto;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .custom-file-input {
+            display: none;
+        }
+
+        .custom-file-label {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #1ABC9C;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .custom-file-label:hover {
+            background-color: #16A085;
+        }
+        .seek-btn {
+            background-color: #1ABC9C;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .seek-btn:hover {
+            background-color: #16A085;
+        }
+
+        .speed-select {
+            background-color: #1ABC9C;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .speed-select:hover {
+            background-color: #16A085;
+        }
+        .alert-box {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .alert-box h2 {
+            margin-top: 0;
+            font-size: 1.5em;
+            text-align: center;
+        }
+        .alert-box p {
+            margin: 10px 0;
+            font-size: 1em;
+        }
+        .alert-box ul {
+            margin: 10px 0;
+            padding-left: 0;
+            list-style-type: none;
+        }
+        .alert-box li {
+            margin-bottom: 8px;
+        }
+        .alert-icon {
+            text-align: center;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .alert-footer {
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#"><i class="fas fa-book"></i> Audiobook</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="Home.html"><i class="fas fa-home"></i>
+                            Home</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-list"></i> Categories
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="categoriesDropdown" id="categoriesMenu">
+                            <!-- Categories hiện thị ở đây -->
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="AllBook.html"><i class="fas fa-info-circle"></i> Book</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="ITS.html"><i class="fas fa-image"></i> ITS</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="TTS.html"><i class="fas fa-file-alt"></i> TTS</a>
+                    </li>
+                </ul>
+                <!-- Search Form -->
+                <form class="d-flex ms-lg-3" id="searchForm">
+                    <input class="form-control me-2" type="search" id="searchInput" placeholder="Search Audiobooks"
+                        aria-label="Search">
+                    <button class="btn btn-outline-light" type="submit"><i class="fas fa-search"></i></button>
+                </form>
+                <ul class="navbar-nav ms-lg-3">
+                    <!-- Login/Logout Links -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fas fa-sign-in-alt"></i> Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5" style="flex: 1;">
+        <h3 class="text-center"><i class="fas fa-image"></i> Sinh âm thanh từ hình ảnh theo giọng đọc tùy chọn</h3>
+        <p><i>Việc sử dụng chức năng sinh âm thanh từ giọng đọc mẫu và hình ảnh có thể tiềm ẩn các rủi ro về <b>quyền riêng tư</b> và <b>bản quyền nội dung</b>. Hãy đảm bảo rằng:</i></p>
+        <ul style="list-style-type: none;">
+            <li><b>1️⃣ Quyền Sử Dụng Hợp Pháp:</b> Bạn có quyền sử dụng giọng nói mẫu và nội dung trích xuất từ hình ảnh.</li>
+            <li><b>2️⃣ Nội Dung Phù Hợp:</b> Tránh tạo ra nội dung sai lệch, lừa đảo hoặc gây hiểu nhầm.</li>
+            <li><b>3️⃣ Bảo Mật Dữ Liệu:</b> Thông tin từ hình ảnh và giọng nói mẫu được xử lý an toàn, không bị rò rỉ ra bên ngoài.</li>
+            <li><b>4️⃣ Tuân Thủ Quy Định Pháp Luật:</b> Việc sử dụng chức năng này cần tuân thủ các quy định pháp luật hiện hành về quyền sở hữu trí tuệ và bảo vệ dữ liệu cá nhân.</li>
+        </ul>
+        <div class="alert-footer">👉 Hãy sử dụng chức năng này một cách có trách nhiệm! 🚨</div>
+        <div class="row">
+            <!-- Left column for image upload -->
+            <div class="col-md-6">
+                <h3>Tải hình ảnh lên</h3>
+                <i>Vui lòng tải lên hình ảnh rõ nét.</i>
+                <br>
+                <form id="imageUploadForm">
+                    <div class="mb-3">
+                        <label for="imageUpload" class="custom-file-label"><i class="fas fa-upload"></i> Chọn hình ảnh</label>
+                        <input class="custom-file-input" type="file" id="imageUpload" multiple>
+                    </div>
+                </form>
+                <div id="imagePreview" class="image-preview"></div>
+                <div style="display: flex;">
+                    <button id="getTextButton" class="btn btn-primary mt-3" onclick="getTextFromImage()" style="display: none; margin: 10px;">Get Text</button> 
+                    <button id="cancelButton" class="btn btn-danger mt-3" onclick="cancelUpload()" style="display: none; margin: 10px;">Cancel</button>
+                </div>
+                <div id="getTextProgress" class="mt-3"></div>
+            </div>
+
+            <!-- Right column for other content -->
+            <div class="col-md-6">
+                <h3>Text được trích xuất từ ảnh tải lên</h3>
+                <div class="mt-3">
+                    <textarea id="extractedText" class="form-control" rows="8" disabled></textarea> 
+                </div>
+                <h3>Chọn giọng đọc</h3>
+                <div class="mb-3">
+                    <select class="form-select" id="voiceSelect">
+                        <option value="0">Chọn giọng đọc</option>
+                    </select>
+                </div>
+                <!-- Add other content here -->
+                <button class="btn btn-success" onclick="generateAudio()">Sinh âm thanh</button>
+            </div>
+            <div id="audioPlayer" class="mt-3"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container text-center">
+            <p>&copy; 2024 Audiobook. All rights reserved.</p>
+            <div class="social-icons">
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.min.js"></script>
+    <script src="https://unpkg.com/wavesurfer.js"></script>
+    <!-- Custom JS -->
+    <script src="./JS/ITS.js"></script>
+</body>
+
+</html>
