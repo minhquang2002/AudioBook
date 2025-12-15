@@ -13,6 +13,10 @@ import com.example.AudioBook.repository.*;
 import com.example.AudioBook.service.BookService;
 import com.example.AudioBook.service.UploadImageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,6 +83,7 @@ public class BookServiceImpl implements BookService {
                     else{
                         x.setRating(rating);
                     }
+                    x.setReviewCount(reviews.size());
                     res.add(x);
                 }
             }
@@ -98,6 +103,7 @@ public class BookServiceImpl implements BookService {
                     else{
                         x.setRating(rating);
                     }
+                    x.setReviewCount(reviews.size());
                     res.add(x);
                 }
             }
@@ -199,6 +205,7 @@ public class BookServiceImpl implements BookService {
                 else{
                     x.setRating(rating);
                 }
+                x.setReviewCount(reviews.size());
                 res.add(x);
             }
         }
@@ -206,8 +213,57 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    public Page<BookResponse> getBookInCategoryPaginated(Long id, int page) {
+        Pageable pageable = PageRequest.of(page, 10);
+        List<BookResponse> allBooks = new ArrayList<>();
+        List<Book> tmp = new ArrayList<>();
+        
+        if(id == 0){
+            tmp = bookRepository.findAll();
+        }
+        else{
+            tmp = bookRepository.findByCategoryId(id);
+        }
+        
+        for(Book b : tmp){
+            List<Review> reviews = reviewRepository.findByBookId(b.getId());
+            double rating = 0.0;
+            for (Review i : reviews){
+                rating += i.getRating();
+            }
+            rating = Math.round(rating / (double) reviews.size() * 10) / 10.0;
+            if(rating == 0){
+                rating = 5;
+            }
+            
+            BookResponse x = new BookResponse();
+            x.setId(b.getId());
+            x.setImage(b.getImage());
+            x.setDescription(b.getDescription());
+            x.setCategory(b.getCategory().getCategory_name());
+            x.setAuthor(b.getAuthor());
+            x.setPublished(b.getPublished_at());
+            x.setTitle(b.getTitle());
+            if(rating == 0){
+                x.setRating(5.0);
+            }
+            else{
+                x.setRating(rating);
+            }
+            x.setReviewCount(reviews.size());
+            allBooks.add(x);
+        }
+        
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), allBooks.size());
+        List<BookResponse> pageContent = allBooks.subList(start, end);
+        
+        return new PageImpl<>(pageContent, pageable, allBooks.size());
+    }
+
+    @Override
     public List<BookResponse> searchBook(String keyword, Long idCategory, int rating1) {
-        List<Book> tmp = bookRepository.findByTitleContaining(keyword);
+        List<Book> tmp = bookRepository.findByTitleOrAuthorContaining(keyword);
         List<BookResponse> res = new ArrayList<>();
         for(Book b : tmp){
             List<Review> reviews = reviewRepository.findByBookId(b.getId());
@@ -235,6 +291,7 @@ public class BookServiceImpl implements BookService {
                     else{
                         x.setRating(rating);
                     }
+                    x.setReviewCount(reviews.size());
                     res.add(x);
                 }
             }
@@ -254,6 +311,7 @@ public class BookServiceImpl implements BookService {
                     else{
                         x.setRating(rating);
                     }
+                    x.setReviewCount(reviews.size());
                     res.add(x);
                 }
             }
@@ -283,6 +341,7 @@ public class BookServiceImpl implements BookService {
             x.setTitle(b.getTitle());
             double rating = Math.round(reviewRepository.findByBookId(b.getId()).stream().mapToDouble(Review::getRating).average().orElse(5.0) * 100.0) / 100.0;
             x.setRating(rating);
+            x.setReviewCount(reviewRepository.findByBookId(b.getId()).size());
             res.add(x);
         }
         return res;

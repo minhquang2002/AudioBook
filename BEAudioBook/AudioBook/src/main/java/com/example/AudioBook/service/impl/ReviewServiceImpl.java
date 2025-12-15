@@ -10,6 +10,10 @@ import com.example.AudioBook.repository.ReviewRepository;
 import com.example.AudioBook.repository.UserRepository;
 import com.example.AudioBook.service.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,9 +26,11 @@ public class ReviewServiceImpl implements ReviewService {
     private UserRepository userRepository;
     @Autowired
     private BookRepository bookRepository;
+    
     @Override
-    public List<Review> getReviewsByBookId(Long bookId) {
-        return reviewRepository.findByBookId(bookId);
+    public Page<Review> getReviewsByBookId(Long bookId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        return reviewRepository.findByBookId(bookId, pageable);
     }
     @Override
     public Review addReview(ReviewRequest reviewRequest) {

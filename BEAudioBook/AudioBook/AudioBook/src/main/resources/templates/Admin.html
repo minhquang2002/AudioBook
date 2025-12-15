@@ -28,7 +28,7 @@
   <!-- Sidebar -->
   <div class="sidebar">
     <a href="#" id="userManagement"><i class="fas fa-users"></i> Quản lý người dùng</a>
-    <a href="#" id="categoryManagement"><i class="fas fa-list"></i> Quản lý danh mục</a>
+    <a href="#" id="categoryManagement"><i class="fas fa-list"></i> Quản lý Thể loại</a>
     <a href="#" id="bookManagement"><i class="fas fa-book"></i> Quản lý sách</a>
   </div>
 
@@ -140,18 +140,18 @@
     </div>
 
     <!--bảng quản lý category-->
-    <!-- Modal Thêm danh mục -->
+    <!-- Modal Thêm Thể loại -->
     <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="addCategoryModalLabel">Thêm danh mục mới</h5>
+            <h5 class="modal-title" id="addCategoryModalLabel">Thêm Thể loại mới</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <div class="mb-3">
-              <label for="categoryName" class="form-label">Tên danh mục</label>
-              <input type="text" class="form-control" id="categoryName" placeholder="Nhập tên danh mục">
+              <label for="categoryName" class="form-label">Thể loại</label>
+              <input type="text" class="form-control" id="categoryName" placeholder="Nhập Thể loại">
             </div>
           </div>
           <div class="modal-footer">
@@ -163,21 +163,21 @@
     </div>
 
     <div id="categoryTable" class="d-none">
-      <h3>Quản lý danh mục</h3>
+      <h3>Quản lý Thể loại</h3>
       <div class="input-group mb-3">
-        <input type="text" id="categorySearchInput" class="form-control" placeholder="Tìm kiếm danh mục...">
+        <input type="text" id="categorySearchInput" class="form-control" placeholder="Tìm kiếm Thể loại...">
         <button class="btn btn-outline-secondary" type="button" id="categorySearchButton"
                 style="margin-left: 10px; background-color: #1ABC9C; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease;"
                 onmouseover="this.style.backgroundColor='#16A085'" onmouseout="this.style.backgroundColor='#1ABC9C'">Tìm kiếm</button>
       </div>
       <button class="btn btn-outline-secondary" type="button" id="categoryAddButton"
               style="margin-bottom:10px; background-color: #1ABC9C; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease;"
-              onmouseover="this.style.backgroundColor='#16A085'" onmouseout="this.style.backgroundColor='#1ABC9C'">Thêm danh mục</button>
+              onmouseover="this.style.backgroundColor='#16A085'" onmouseout="this.style.backgroundColor='#1ABC9C'">Thêm Thể loại</button>
       <table class="table table-bordered table-striped">
         <thead class="table-dark">
         <tr>
           <th>ID</th>
-          <th>Tên danh mục</th>
+          <th>Thể loại</th>
           <th>Số lượng sách trong CSDL</th>
           <th>Thao tác</th>
         </tr>
@@ -193,18 +193,18 @@
         </ul>
       </nav>
     </div>
-    <!-- Modal Chỉnh sửa danh mục -->
+    <!-- Modal Chỉnh sửa Thể loại -->
     <div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="editCategoryModalLabel">Chỉnh sửa thông tin danh mục</h5>
+            <h5 class="modal-title" id="editCategoryModalLabel">Chỉnh sửa thông tin Thể loại</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <form id="editCategoryForm">
               <div class="mb-3">
-                <label for="editCategory" class="form-label">Tên danh mục</label>
+                <label for="editCategory" class="form-label">Thể loại</label>
                 <input type="text" class="form-control" id="editCategory" >
               </div>
             </form>
@@ -216,7 +216,7 @@
         </div>
       </div>
     </div>
-    <!-- Modal Xác nhận Xóa danh mục -->
+    <!-- Modal Xác nhận Xóa Thể loại -->
     <div class="modal fade" id="confirmDeleteModalCategory" tabindex="-1" aria-labelledby="confirmDeleteModalLabel"
          aria-hidden="true">
       <div class="modal-dialog">
@@ -226,9 +226,9 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <p>Bạn có chắc chắn muốn xóa danh mục này?
-            <br>Việc xóa sẽ xóa hết các phần liên quan đến danh mục?</p>
-            <p><strong>Tên danh mục:</strong> <span id="modalCategory"></span></p>
+            <p>Bạn có chắc chắn muốn xóa Thể loại này?
+            <br>Việc xóa sẽ xóa hết các phần liên quan đến Thể loại?</p>
+            <p><strong>Thể loại:</strong> <span id="modalCategory"></span></p>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
@@ -256,7 +256,7 @@
           <th>ID</th>
           <th>Ảnh bìa</th>
           <th>Tên sách</th>
-          <th>Danh mục</th>
+          <th>Thể loại</th>
           <th>Tác giả</th>
           <th>Mô tả</th>
           <th>Thao tác</th>

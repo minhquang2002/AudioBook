@@ -100,18 +100,26 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String changeProfile(String username, ChangeProfileRequest changeProfileRequest) {
+    public String updateProfile(String username, UpdateProfileRequest updateProfileRequest) {
+        User user = userRepository.findByUsername(username).get();
+        user.setFullname(updateProfileRequest.getFullname());
+        user.setPhonenumber(updateProfileRequest.getPhonenumber());
+        user.setEmail(updateProfileRequest.getEmail());
+        userRepository.save(user);
+        return "Update profile success!";
+    }
+
+    @Override
+    public String changePassword(String username, ChangePasswordRequest changePasswordRequest) {
         User user = userRepository.findByUsername(username).get();
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
-        if(passwordEncoder.matches(changeProfileRequest.getOldPassword(),user.getPassword())){
-            user.setFullname(changeProfileRequest.getFullname());
-            user.setPhonenumber(changeProfileRequest.getPhonenumber());
-            user.setEmail(changeProfileRequest.getEmail());
-            user.setPassword(passwordEncoder.encode(changeProfileRequest.getNewPassword()));
+        
+        if(passwordEncoder.matches(changePasswordRequest.getOldPassword(), user.getPassword())){
+            user.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
             userRepository.save(user);
-            return "Change profile success!";
+            return "Change password success!";
         }
-        return "Change profile fail!";
+        return "Old password is incorrect!";
     }
 
 

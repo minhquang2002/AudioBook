@@ -12,5 +12,6 @@ public interface UserService {
     UserResponse getUser(String username);
     String deleteUser(String username);
     String updateUser(String username, UserUpdateRequest userUpdateRequest);
-    String changeProfile(String username, ChangeProfileRequest changeProfileRequest);
+    String updateProfile(String username, UpdateProfileRequest updateProfileRequest);
+    String changePassword(String username, ChangePasswordRequest changePasswordRequest);
 }

@@ -25,7 +25,12 @@ public class ChapterServiceImpl implements ChapterService {
         Chapter chapter = new Chapter();
         chapter.setTitle_chapter(chapterRequest.getChapter_title());
         chapter.setText(chapterRequest.getText());
-        chapter.setBook(bookRepository.findById(chapterRequest.getBook_id()).get());
+        
+        // Check if book exists
+        var book = bookRepository.findById(chapterRequest.getBook_id())
+                .orElseThrow(() -> new RuntimeException("Book not found with id: " + chapterRequest.getBook_id()));
+        
+        chapter.setBook(book);
         chapterRepository.save(chapter);
         return chapter.getId();
     }
@@ -33,9 +38,16 @@ public class ChapterServiceImpl implements ChapterService {
     @Transactional
     @Override
     public String updateChapter(Long id, ChapterRequest chapterRequest) {
-        Chapter chapter = chapterRepository.findById(id).get();
-        chapter.setTitle_chapter(chapterRequest.getChapter_title());
-        chapter.setText(chapterRequest.getText());
+        Chapter chapter = chapterRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Chapter not found with id: " + id));
+        
+        if (chapterRequest.getChapter_title() != null) {
+            chapter.setTitle_chapter(chapterRequest.getChapter_title());
+        }
+        if (chapterRequest.getText() != null) {
+            chapter.setText(chapterRequest.getText());
+        }
+        
         chapterRepository.save(chapter);
         return "Success!";
     }

@@ -7,6 +7,10 @@ import com.example.AudioBook.repository.ListenHistoryRepository;
 import com.example.AudioBook.repository.UserRepository;
 import com.example.AudioBook.service.ListenHistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -33,19 +37,22 @@ public class ListenHistoryServiceImpl implements ListenHistoryService {
     }
 
     @Override
-    public List<ListenHistoryResponse> getListenHistory(String username) {
-        List<ListenHistory> listenHistories = listenHistoryRepository.findAllByUser(userRepository.findByUsername(username).get());
-        listenHistories.sort((a, b) -> b.getId().compareTo(a.getId()));
-        List<ListenHistoryResponse> listenHistoryResponses = new ArrayList<>();
-        for (ListenHistory listenHistory : listenHistories){
+    public Page<ListenHistoryResponse> getListenHistory(String username, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Page<ListenHistory> listenHistories = listenHistoryRepository.findAllByUser(
+            userRepository.findByUsername(username).get(),
+            pageable
+        );
+        
+        return listenHistories.map(listenHistory -> {
             ListenHistoryResponse listenHistoryResponse = new ListenHistoryResponse();
             listenHistoryResponse.setAudioUrl(listenHistory.getAudio_url());
             listenHistoryResponse.setTitleOfBook(listenHistory.getTitleOfBook());
             listenHistoryResponse.setTitleOfChapter(listenHistory.getTitleOfChapter());
             listenHistoryResponse.setNameOfAudio(listenHistory.getNameOfAudio());
             listenHistoryResponse.setTime(listenHistory.getTime());
-            listenHistoryResponses.add(listenHistoryResponse);
-        }
-        return listenHistoryResponses;
+            listenHistoryResponse.setUsername(username);
+            return listenHistoryResponse;
+        });
     }
 }

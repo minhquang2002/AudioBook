@@ -13,7 +13,7 @@ import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://127.0.0.1:5500")
+@CrossOrigin(origins = "http://127.0.0.1:8081")
 public class BookController {
     @Autowired
     private BookService bookService;
@@ -57,6 +57,11 @@ public class BookController {
     @GetMapping("/bookInCategory/{id}/{rating}")
     public ResponseEntity<?> getBookInCategory(@PathVariable Long id,@PathVariable int rating){
         return ResponseEntity.ok(bookService.getBookInCategory(id,rating));
+    }
+
+    @GetMapping("/bookInCategory/page/{id}/{page}")
+    public ResponseEntity<?> getBookInCategoryPaginated(@PathVariable Long id, @PathVariable int page){
+        return ResponseEntity.ok(bookService.getBookInCategoryPaginated(id, page));
     }
 
     @GetMapping("/searchBook/{keyword}/{categoryId}/{rating}")

@@ -1,6 +1,7 @@
 package com.example.AudioBook.DTO.Book;
 
 import com.example.AudioBook.DTO.Chapter.ChapterDetailResponse;
+import com.example.AudioBook.DTO.Review.ReviewResponse;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import java.util.List;
@@ -27,4 +28,8 @@ public class BookDetailResponse {
     private String image;
     @JsonProperty("listChapter")
     private List<ChapterDetailResponse> chapters;
+    @JsonProperty("reviews")
+    private List<ReviewResponse> reviews;
+    @JsonProperty("rating")
+    private Double rating;
 }

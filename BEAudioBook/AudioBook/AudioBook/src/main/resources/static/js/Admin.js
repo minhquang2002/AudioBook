@@ -242,10 +242,10 @@ const fetchCategories = async () => {
         });
     } catch (error) {
         console.error('Error fetching categories:', error);
-        alert('Không thể tải dữ liệu danh mục.');
+        alert('Không thể tải dữ liệu Thể loại.');
     }
 };
-// Lắng nghe sự kiện khi nhấn nút Thêm danh mục
+// Lắng nghe sự kiện khi nhấn nút Thêm Thể loại
 document.getElementById('categoryAddButton').addEventListener('click', function () {
   // Hiển thị modal
   const addCategoryModal = new bootstrap.Modal(document.getElementById('addCategoryModal'));
@@ -255,14 +255,14 @@ document.getElementById('categoryAddButton').addEventListener('click', function 
 document.getElementById('addCategoryButton').addEventListener('click', function () {
   const categoryName = document.getElementById('categoryName').value;
   if (categoryName.trim() === "") {
-    alert("Tên danh mục không được để trống!");
+    alert("Thể loại không được để trống!");
     return;
   }
   // Tạo đối tượng categoryRequest để gửi lên server
   var categoryRequest = {
     name: categoryName
   };
-  // Gọi API để thêm danh mục
+  // Gọi API để thêm Thể loại
   fetch('http://localhost:8080/category', {
     method: 'POST',
     headers: {
@@ -272,7 +272,7 @@ document.getElementById('addCategoryButton').addEventListener('click', function 
   })
   .then(response => {
     if (!response.ok) {
-      throw new Error('Lỗi khi thêm danh mục');
+      throw new Error('Lỗi khi thêm Thể loại');
     }
     return response.text(); // Chuyển đổi phản hồi sang text
   })
@@ -284,14 +284,14 @@ document.getElementById('addCategoryButton').addEventListener('click', function 
       addCategoryModal.hide();
       // Xóa nội dung input
       document.getElementById('categoryName').value = '';
-      alert("Thêm danh mục thành công!");
+      alert("Thêm Thể loại thành công!");
     } else if (data === "Failed!") {
-      alert("Thêm danh mục không thành công. Danh mục đã tồn tại.");
+      alert("Thêm Thể loại không thành công. Thể loại đã tồn tại.");
     }
   })
   .catch(error => {
     console.error("Có lỗi xảy ra:", error);
-    alert("Có lỗi xảy ra khi thêm danh mục. Vui lòng thử lại.");
+    alert("Có lỗi xảy ra khi thêm Thể loại. Vui lòng thử lại.");
   });
 });
 /////////////////////////update category//////////////////////
@@ -326,19 +326,19 @@ document.getElementById('saveCategoryButton').addEventListener('click', async fu
         }
         var dataResponse = await response.text();
         if(dataResponse === "Success!"){
-            alert('Cập nhật danh mục thành công!');
+            alert('Cập nhật Thể loại thành công!');
         }
         else{
-            alert('Cập nhật danh mục không thành công!');
+            alert('Cập nhật Thể loại không thành công!');
         }
         const editCategoryModal = bootstrap.Modal.getInstance(document.getElementById('editCategoryModal'));
         editCategoryModal.hide();
         await fetchCategories();
     } catch (error) {
-        alert('Cập nhật danh mục thất bại');
+        alert('Cập nhật Thể loại thất bại');
     }
 });
-///////////////////////Xoa danh mục/////////////////////////////////////////
+///////////////////////Xoa Thể loại/////////////////////////////////////////
 let idCategoryToDelete = null;
 function deleteCategory(idCategory) {
     const category = categories.find(u => u.id === idCategory);
@@ -357,7 +357,7 @@ document.getElementById('confirmDeleteCategoryButton').addEventListener('click',
         await fetch(`http://localhost:8080/category/${idCategoryToDelete}`, { method: 'DELETE' });
         console.log('ID to delete:', idCategoryToDelete);
         // Sau khi xóa thành công, ẩn modal
-        alert('Xóa danh mục thành công!');
+        alert('Xóa Thể loại thành công!');
         const confirmDeleteModal = bootstrap.Modal.getInstance(document.getElementById('confirmDeleteModalCategory'));
         confirmDeleteModal.hide();
         // Tải lại danh sách người dùng
@@ -366,16 +366,16 @@ document.getElementById('confirmDeleteCategoryButton').addEventListener('click',
         console.error('Error deleting category:', error);
     }
 });
-// Hàm để tìm kiếm danh mục
+// Hàm để tìm kiếm Thể loại
 const searchCategories = () => {
     const searchTerm = document.getElementById('categorySearchInput').value.toLowerCase();
     filteredCategories = categories.filter(category =>
         category.name.toLowerCase().includes(searchTerm)
     );
     console.log(filteredCategories);
-    displayCategories(); // Hiển thị danh mục đã lọc
+    displayCategories(); // Hiển thị Thể loại đã lọc
 };
-// Hàm để hiển thị danh mục (cập nhật để sử dụng filteredCategories)
+// Hàm để hiển thị Thể loại (cập nhật để sử dụng filteredCategories)
 const displayCategories = () => {
     const categoryTableBody = document.getElementById('categoryTableBody');
     categoryTableBody.innerHTML = ''; // Xóa nội dung cũ
@@ -399,10 +399,10 @@ const displayCategories = () => {
 document.getElementById('categorySearchButton').addEventListener('click', searchCategories);
 // Bắt sự kiện khi người dùng nhập vào ô tìm kiếm (tự động tìm kiếm)
 document.getElementById('categorySearchInput').addEventListener('input', searchCategories);
-// Khi trang được tải, mặc định hiển thị toàn bộ danh mục
+// Khi trang được tải, mặc định hiển thị toàn bộ Thể loại
 document.addEventListener('DOMContentLoaded', async () => {
     await fetchCategories();
-    filteredCategories = categories; // Hiển thị toàn bộ danh mục
+    filteredCategories = categories; // Hiển thị toàn bộ Thể loại
     displayCategories();
 });
 ///////////////////////////////////////////////Book Management/////////////////////////////////////////////////////////////

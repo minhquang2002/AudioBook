@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://127.0.0.1:5500")
+@CrossOrigin(origins = "http://127.0.0.1:8081")
 public class ListenHistoryController {
     @Autowired
     private ListenHistoryService listenHistoryService;
@@ -18,8 +18,13 @@ public class ListenHistoryController {
     public ResponseEntity<?> addListenHistory(@RequestBody ListenHistoryRequest listenHistoryRequest){
         return ResponseEntity.ok(listenHistoryService.addListenHistory(listenHistoryRequest));
     }
+    
     @GetMapping("/listenHistory/{username}")
-    public ResponseEntity<?> getListenHistory(@PathVariable String username){
-        return ResponseEntity.ok(listenHistoryService.getListenHistory(username));
+    public ResponseEntity<?> getListenHistory(
+            @PathVariable String username,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ){
+        return ResponseEntity.ok(listenHistoryService.getListenHistory(username, page, size));
     }
 }

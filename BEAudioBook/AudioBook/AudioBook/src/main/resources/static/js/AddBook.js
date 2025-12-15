@@ -255,7 +255,7 @@ async function uploadImage(file) {
     const imageUrl = await response.text();
     return imageUrl;
 }
-// lấy danh mục
+// lấy Thể loại
 async function loadCategories() {
     try {
         const response = await fetch('http://localhost:8080/category/getCategories');
@@ -271,5 +271,5 @@ async function loadCategories() {
         console.error('Error loading categories:', error);
     }
 }
-//load trang thì lấy lại danh mục
+//load trang thì lấy lại Thể loại
 window.onload = loadCategories;

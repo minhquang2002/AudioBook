@@ -81,7 +81,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     @Override
     public String deleteCategory(Long id) {
-        // Lấy danh sách các sách thuộc danh mục muốn xóa
+        // Lấy danh sách các sách thuộc Thể loại muốn xóa
         List<Book> books = bookRepository.findByCategoryId(id);
         for (Book book : books) {
             // Lấy danh sách các chương liên quan đến sách
@@ -95,7 +95,7 @@ public class CategoryServiceImpl implements CategoryService {
         }
         // Xóa các sách
         bookRepository.deleteAll(books);
-        // Xóa danh mục
+        // Xóa Thể loại
         categoryRepository.deleteById(id);
         return "Success!";
     }

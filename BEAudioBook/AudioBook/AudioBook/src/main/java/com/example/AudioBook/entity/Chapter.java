@@ -21,9 +21,11 @@ public class Chapter {
     private Long id;
     @Column(name = "title_chapter")
     private String title_chapter;
+    
     @Lob
-    @Column(name = "text")
+    @Column(name = "text", columnDefinition = "LONGTEXT")
     private String text;
+    
     @ManyToOne
     @JoinColumn(name = "bookId")
     private Book book;

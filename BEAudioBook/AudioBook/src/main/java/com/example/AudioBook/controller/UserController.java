@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "http://127.0.0.1:5500")
+@CrossOrigin(origins = "http://127.0.0.1:8081")
 public class UserController {
     @Autowired
     private UserService userService;
@@ -47,9 +47,18 @@ public class UserController {
         return ResponseEntity.ok(userService.updateUser(username,userUpdateRequest));
     }
 
-    @PutMapping("/user/change-profile/{username}")
-    public ResponseEntity<?> changeProfile(@PathVariable String username, @RequestBody ChangeProfileRequest changeProfileRequest){
-        return ResponseEntity.ok(userService.changeProfile(username,changeProfileRequest));
+    @PutMapping("/user/update-profile/{username}")
+    public ResponseEntity<?> updateProfile(@PathVariable String username, @RequestBody UpdateProfileRequest updateProfileRequest){
+        return ResponseEntity.ok(userService.updateProfile(username, updateProfileRequest));
+    }
+
+    @PutMapping("/user/change-password/{username}")
+    public ResponseEntity<?> changePassword(@PathVariable String username, @RequestBody ChangePasswordRequest changePasswordRequest){
+        String result = userService.changePassword(username, changePasswordRequest);
+        if(result.equals("Old password is incorrect!")){
+            return ResponseEntity.badRequest().body(result);
+        }
+        return ResponseEntity.ok(result);
     }
     @DeleteMapping("/user/{username}")
     public ResponseEntity<?> deleteUser(@PathVariable String username){

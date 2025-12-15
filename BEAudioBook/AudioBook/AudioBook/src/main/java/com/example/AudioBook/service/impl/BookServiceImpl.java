@@ -5,13 +5,16 @@ import com.example.AudioBook.DTO.Book.BookDetailResponse;
 import com.example.AudioBook.DTO.Book.BookRequest;
 import com.example.AudioBook.DTO.Book.BookResponse;
 import com.example.AudioBook.DTO.Chapter.ChapterDetailResponse;
+import com.example.AudioBook.DTO.Review.ReviewResponse;
 import com.example.AudioBook.entity.Audio;
 import com.example.AudioBook.entity.Book;
 import com.example.AudioBook.entity.Chapter;
+import com.example.AudioBook.entity.Review;
 import com.example.AudioBook.repository.AudioRepository;
 import com.example.AudioBook.repository.BookRepository;
 import com.example.AudioBook.repository.CategoryRepository;
 import com.example.AudioBook.repository.ChapterRepository;
+import com.example.AudioBook.repository.ReviewRepository;
 import com.example.AudioBook.service.BookService;
 import com.example.AudioBook.service.UploadImageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +38,9 @@ public class BookServiceImpl implements BookService {
     ChapterRepository chapterRepository;
     @Autowired
     AudioRepository audioRepository;
+    @Autowired
+    ReviewRepository reviewRepository;
+    
     @Override
     public Long addBook(BookRequest bookRequest) {
         Book book = new Book();
@@ -98,6 +104,32 @@ public class BookServiceImpl implements BookService {
             listChapter.add(tmp);
         }
         res.setChapters(listChapter);
+        
+        // Add reviews
+        List<Review> reviews = reviewRepository.findByBookId(id);
+        List<ReviewResponse> reviewResponses = new ArrayList<>();
+        int totalRating = 0;
+        
+        for (Review review : reviews) {
+            ReviewResponse reviewResponse = new ReviewResponse();
+            reviewResponse.setId(review.getId());
+            reviewResponse.setReview(review.getReview());
+            reviewResponse.setRating(5); // Default rating since entity doesn't have it
+            reviewResponse.setDate(""); // Add date if available
+            
+            ReviewResponse.UserInfo userInfo = new ReviewResponse.UserInfo();
+            userInfo.setUsername(review.getUser().getUsername());
+            reviewResponse.setUser(userInfo);
+            
+            reviewResponses.add(reviewResponse);
+            totalRating += 5;
+        }
+        
+        res.setReviews(reviewResponses);
+        if (!reviews.isEmpty()) {
+            res.setRating((double) totalRating / reviews.size());
+        }
+        
         return res;
     }
     @Transactional

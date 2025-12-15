@@ -26,4 +26,6 @@ public class BookResponse {
     private String image;
     @JsonProperty("rating")
     private double rating;
+    @JsonProperty("reviewCount")
+    private int reviewCount;
 }
