@@ -52,9 +52,9 @@ const Login = () => {
             <BookOpen className="h-8 w-8 text-primary-foreground" />
           </div>
           <div>
-            <CardTitle className="text-2xl">Welcome Back</CardTitle>
+            <CardTitle className="text-2xl">Chào Mừng Trở Lại</CardTitle>
             <CardDescription>
-              Enter your credentials to access your account
+              Nhập thông tin đăng nhập để truy cập tài khoản
             </CardDescription>
           </div>
         </CardHeader>
@@ -69,11 +69,11 @@ const Login = () => {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="username">Tên Đăng Nhập</Label>
               <Input
                 id="username"
                 type="text"
-                placeholder="Enter your username"
+                placeholder="Nhập tên đăng nhập"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
@@ -82,12 +82,12 @@ const Login = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Mật Khẩu</Label>
               <div className="relative">
                 <Input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="Enter your password"
+                  placeholder="Nhập mật khẩu"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -117,20 +117,20 @@ const Login = () => {
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Logging in...
+                  Đang đăng nhập...
                 </>
               ) : (
-                'Login'
+                'Đăng Nhập'
               )}
             </Button>
 
             <p className="text-center text-sm text-muted-foreground">
-              Don't have an account?{' '}
+              Chưa có tài khoản?{' '}
               <Link
                 to="/register"
                 className="font-medium text-primary transition-colors hover:text-primary/80"
               >
-                Register here
+                Đăng ký ngay
               </Link>
             </p>
           </CardFooter>

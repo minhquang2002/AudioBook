@@ -31,23 +31,6 @@ const Index = () => {
     }
   };
 
-  // Mock data for demo
-  const mockBooks: FeaturedBook[] = featuredBooks.length > 0 ? featuredBooks : [
-    { id: 1, title: 'The Great Gatsby', image: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400', rating: 4.5, category: 'Fiction' },
-    { id: 2, title: 'Atomic Habits', image: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400', rating: 4.8, category: 'Self-Help' },
-    { id: 3, title: 'The Psychology of Money', image: 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=400', rating: 4.7, category: 'Finance' },
-    { id: 4, title: 'Sapiens', image: 'https://images.unsplash.com/photo-1589998059171-988d887df646?w=400', rating: 4.6, category: 'History' },
-  ];
-
-  const mockCategories: Category[] = categories.length > 0 ? categories : [
-    { id: 1, name: 'Fiction' },
-    { id: 2, name: 'Non-Fiction' },
-    { id: 3, name: 'Science' },
-    { id: 4, name: 'History' },
-    { id: 5, name: 'Self-Help' },
-    { id: 6, name: 'Biography' },
-  ];
-
   return (
     <MainLayout>
       {/* Hero Section */}
@@ -101,7 +84,7 @@ const Index = () => {
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-              {/* {mockCategories.map((category, index) => (
+              {categories.map((category, index) => (
                 <div
                   key={category.id}
                   className="animate-slide-up"
@@ -109,7 +92,7 @@ const Index = () => {
                 >
                   <CategoryCard id={category.id} name={category.name} />
                 </div>
-              ))} */}
+              ))}
             </div>
           )}
         </div>
@@ -141,7 +124,7 @@ const Index = () => {
             </div>
           ) : (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {mockBooks.map((book, index) => (
+              {featuredBooks.map((book, index) => (
                 <div
                   key={book.id}
                   className="animate-slide-up"

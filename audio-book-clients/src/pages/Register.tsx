@@ -74,9 +74,9 @@ const Register = () => {
             <BookOpen className="h-8 w-8 text-primary-foreground" />
           </div>
           <div>
-            <CardTitle className="text-2xl">Create an Account</CardTitle>
+            <CardTitle className="text-2xl">Tạo Tài Khoản</CardTitle>
             <CardDescription>
-              Join AudioBook to start listening
+              Tham gia AudioBook để bắt đầu nghe sách
             </CardDescription>
           </div>
         </CardHeader>
@@ -100,12 +100,12 @@ const Register = () => {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="username">Tên Đăng Nhập</Label>
               <Input
                 id="username"
                 name="username"
                 type="text"
-                placeholder="Choose a username"
+                placeholder="Chọn tên đăng nhập"
                 value={formData.username}
                 onChange={handleChange}
                 required
@@ -115,12 +115,12 @@ const Register = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="fullname">Full Name</Label>
+              <Label htmlFor="fullname">Họ và Tên</Label>
               <Input
                 id="fullname"
                 name="fullname"
                 type="text"
-                placeholder="Enter your full name"
+                placeholder="Nhập họ và tên"
                 value={formData.fullname}
                 onChange={handleChange}
                 disabled={success}
@@ -134,7 +134,7 @@ const Register = () => {
                 id="email"
                 name="email"
                 type="email"
-                placeholder="Enter your email"
+                placeholder="Nhập địa chỉ email"
                 value={formData.email}
                 onChange={handleChange}
                 required
@@ -144,12 +144,12 @@ const Register = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="phonenumber">Phone Number</Label>
+              <Label htmlFor="phonenumber">Số Điện Thoại</Label>
               <Input
                 id="phonenumber"
                 name="phonenumber"
                 type="tel"
-                placeholder="Enter your phone number"
+                placeholder="Nhập số điện thoại"
                 value={formData.phonenumber}
                 onChange={handleChange}
                 required
@@ -159,13 +159,13 @@ const Register = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Mật Khẩu</Label>
               <div className="relative">
                 <Input
                   id="password"
                   name="password"
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="Create a password (min 6 characters)"
+                  placeholder="Tạo mật khẩu (tối thiểu 6 ký tự)"
                   value={formData.password}
                   onChange={handleChange}
                   required
@@ -197,20 +197,20 @@ const Register = () => {
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creating account...
+                  Đang tạo tài khoản...
                 </>
               ) : (
-                'Register'
+                'Đăng Ký'
               )}
             </Button>
 
             <p className="text-center text-sm text-muted-foreground">
-              Already have an account?{' '}
+              Đã có tài khoản?{' '}
               <Link
                 to="/login"
                 className="font-medium text-primary transition-colors hover:text-primary/80"
               >
-                Login here
+                Đăng nhập ngay
               </Link>
             </p>
           </CardFooter>
