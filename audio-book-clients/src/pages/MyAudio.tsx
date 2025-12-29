@@ -349,10 +349,7 @@ const MyAudio = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">My Audio</h1>
-            <p className="mt-2 text-muted-foreground">
-              Quản lý các audio của bạn
-            </p>
+            <h1 className="text-3xl font-bold text-foreground">Âm thanh của tôi</h1>
           </div>
           <Dialog open={isAddDialogOpen} onOpenChange={(open) => {
             if (!open) resetDialog();
@@ -361,7 +358,7 @@ const MyAudio = () => {
             <DialogTrigger asChild>
               <Button>
                 <Plus className="mr-2 h-4 w-4" />
-                Thêm Audio
+                Thêm
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">

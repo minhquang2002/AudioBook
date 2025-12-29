@@ -74,7 +74,7 @@ export function Footer() {
 
           {/* Categories */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Danh Mục</h3>
+            <h3 className="text-lg font-semibold">Thể loại</h3>
             <ul className="space-y-2">
               <li>
                 <Link to="/category/1" className="text-sm text-secondary-foreground/70 transition-colors hover:text-primary">

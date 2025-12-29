@@ -392,7 +392,7 @@ const Listen = () => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="admin">Giọng có sẵn</SelectItem>
-                      <SelectItem value="user">Sử dụng giọng của bạn</SelectItem>
+                      <SelectItem value="user">Giọng người dùng tải lên</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

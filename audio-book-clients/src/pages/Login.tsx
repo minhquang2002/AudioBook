@@ -10,7 +10,7 @@ import { BookOpen, AlertCircle, Eye, EyeOff, Loader2 } from 'lucide-react';
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login, isAuthenticated } = useAuth();
+  const { login, isAuthenticated, isAdmin } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -19,9 +19,9 @@ const Login = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/');
+      navigate(isAdmin ? '/admin' : '/');
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, isAdmin, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,7 +30,14 @@ const Login = () => {
 
     try {
       await login(username, password);
-      navigate('/');
+      // Check role after login and redirect accordingly
+      const storedUser = localStorage.getItem('userData');
+      if (storedUser) {
+        const userData = JSON.parse(storedUser);
+        navigate(userData.role === 'ADMIN' ? '/admin' : '/');
+      } else {
+        navigate('/');
+      }
     } catch (err: any) {
       setError(err.message || 'Đăng nhập thất bại. Vui lòng kiểm tra username và mật khẩu.');
     } finally {

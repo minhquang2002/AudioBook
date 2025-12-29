@@ -103,7 +103,7 @@ const TTS = () => {
           titleOfChapter: 'Text to Speech',
           audioUrl: result.audio_file_url,
           nameOfAudio: selectedVoiceName,
-          time: new Date().toLocaleString('vi-VN'),
+          time: new Date().toISOString(),
         });
       }
 

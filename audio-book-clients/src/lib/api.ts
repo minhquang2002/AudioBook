@@ -138,7 +138,7 @@ export const authApi = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password }),
     });
-    if (!response.ok) throw new Error('Login failed');
+    if (!response.ok) throw new Error('Tài khoản/mật khẩu không đúng');
     return response.text();
   },
 
@@ -156,7 +156,7 @@ export const authApi = {
     });
     if (!response.ok) {
       const text = await response.text();
-      throw new Error(text || 'Registration failed');
+      throw new Error(text || 'Đăng ký thất bại');
     }
     return response.text();
   },
@@ -173,6 +173,12 @@ export const authApi = {
     await apiRequest(`/user/${username}`, {
       method: 'PUT',
       body: JSON.stringify(data),
+    });
+  },
+
+  deleteUser: async (username: string): Promise<void> => {
+    await apiRequest(`/user/${username}`, {
+      method: 'DELETE',
     });
   },
 
@@ -276,6 +282,19 @@ export const categoriesApi = {
     await apiRequest('/category', {
       method: 'POST',
       body: JSON.stringify({ name }),
+    });
+  },
+
+  update: async (id: number, name: string): Promise<void> => {
+    await apiRequest(`/category/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ name }),
+    });
+  },
+
+  delete: async (id: number): Promise<void> => {
+    await apiRequest(`/category/${id}`, {
+      method: 'DELETE',
     });
   },
 };

@@ -65,39 +65,6 @@ const Index = () => {
           </div>
         </div>
       </section>
-
-      {/* Categories Section */}
-      <section className="py-16 lg:py-24">
-        <div className="container mx-auto px-4">
-          <div className="mb-10 text-center">
-            <h2 className="text-3xl font-bold text-foreground lg:text-4xl">
-              Duyệt Theo Thể loại
-            </h2>
-            <p className="mt-3 text-muted-foreground">
-              Tìm audiobook yêu thích tiếp theo của bạn bằng cách khám phá các Thể loại
-            </p>
-          </div>
-
-          {isLoading ? (
-            <div className="flex justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-              {categories.map((category, index) => (
-                <div
-                  key={category.id}
-                  className="animate-slide-up"
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  <CategoryCard id={category.id} name={category.name} />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-
       {/* Featured Books Section */}
       <section className="bg-muted/30 py-16 lg:py-24">
         <div className="container mx-auto px-4">
@@ -152,6 +119,40 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* Categories Section */}
+      <section className="py-16 lg:py-24">
+        <div className="container mx-auto px-4">
+          <div className="mb-10 text-center">
+            <h2 className="text-3xl font-bold text-foreground lg:text-4xl">
+              Duyệt Theo Thể loại
+            </h2>
+            <p className="mt-3 text-muted-foreground">
+              Tìm audiobook yêu thích tiếp theo của bạn bằng cách khám phá các Thể loại
+            </p>
+          </div>
+
+          {isLoading ? (
+            <div className="flex justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+              {categories.map((category, index) => (
+                <div
+                  key={category.id}
+                  className="animate-slide-up"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <CategoryCard id={category.id} name={category.name} />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      
 
       {/* Features Section */}
       <section className="py-16 lg:py-24">

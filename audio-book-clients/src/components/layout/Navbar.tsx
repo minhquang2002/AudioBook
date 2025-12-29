@@ -237,7 +237,7 @@ export function Navbar() {
                   <DropdownMenuItem asChild>
                     <Link to="/my-audio" className="flex items-center gap-2">
                       <Music className="h-4 w-4" />
-                      Audio Của Tôi
+                      Âm thanh Của Tôi
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>

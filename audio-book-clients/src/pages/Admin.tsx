@@ -46,7 +46,7 @@ const Admin = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 gap-2 bg-muted/50 p-1 md:grid-cols-4">
+          <TabsList className="grid w-full grid-cols-2 gap-2 bg-muted/50 p-1 md:grid-cols-5">
             <TabsTrigger value="users" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
               <span className="hidden sm:inline">Người Dùng</span>
@@ -58,6 +58,10 @@ const Admin = () => {
             <TabsTrigger value="books" className="flex items-center gap-2">
               <BookOpen className="h-4 w-4" />
               <span className="hidden sm:inline">Sách</span>
+            </TabsTrigger>
+              <TabsTrigger value="audio-generation" className="flex items-center gap-2">
+              <Mic className="h-4 w-4" />
+              <span className="hidden sm:inline">Sinh Audio</span>
             </TabsTrigger>
             <TabsTrigger value="statistics" className="flex items-center gap-2">
               <BarChart3 className="h-4 w-4" />
@@ -75,6 +79,9 @@ const Admin = () => {
 
           <TabsContent value="books" className="space-y-4">
             <BooksManagement />
+          </TabsContent>
+          <TabsContent value="audio-generation" className="space-y-4">
+            <AudioGeneration />
           </TabsContent>
           <TabsContent value="statistics" className="space-y-4">
             <ReviewStatistics />

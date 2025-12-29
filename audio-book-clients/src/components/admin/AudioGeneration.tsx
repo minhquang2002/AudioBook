@@ -4,31 +4,70 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/hooks/use-toast";
-import { Mic, Play, Pause, Download, Loader2 } from "lucide-react";
-
-const voices = [
-  { id: "vi-VN-HoaiMyNeural", name: "Hoài My (Nữ)" },
-  { id: "vi-VN-NamMinhNeural", name: "Nam Minh (Nam)" },
-  { id: "alloy", name: "Alloy (English)" },
-  { id: "echo", name: "Echo (English)" },
-  { id: "fable", name: "Fable (English)" },
-  { id: "onyx", name: "Onyx (English)" },
-  { id: "nova", name: "Nova (English)" },
-  { id: "shimmer", name: "Shimmer (English)" },
-];
+import { Mic, Play, Pause, Download, Loader2, Upload, X } from "lucide-react";
+import { ttsApi, uploadApi } from "@/lib/api";
 
 const AudioGeneration = () => {
   const [text, setText] = useState("");
-  const [selectedVoice, setSelectedVoice] = useState(voices[0].id);
-  const [speed, setSpeed] = useState([1.0]);
+  const [voiceFile, setVoiceFile] = useState<File | null>(null);
+  const [voiceFileUrl, setVoiceFileUrl] = useState<string>("");
+  const [uploadedVoiceUrl, setUploadedVoiceUrl] = useState<string>("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
   const { toast } = useToast();
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith('audio/')) {
+        toast({
+          title: "Lỗi",
+          description: "Vui lòng chọn file audio hợp lệ",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      const localUrl = URL.createObjectURL(file);
+      
+      // Upload file to server immediately
+      setIsUploading(true);
+      try {
+        const serverUrl = await uploadApi.uploadFile(file);
+        setUploadedVoiceUrl(serverUrl);
+        setVoiceFile(file);
+        setVoiceFileUrl(localUrl);
+        toast({
+          title: "Thành công",
+          description: "Upload file giọng đọc thành công",
+        });
+      } catch (error) {
+        console.error('Upload error:', error);
+        toast({
+          title: "Lỗi",
+          description: "Không thể upload file. Vui lòng thử lại.",
+          variant: "destructive",
+        });
+        // Clean up if upload fails
+        URL.revokeObjectURL(localUrl);
+      } finally {
+        setIsUploading(false);
+      }
+    }
+  };
+
+  const removeVoiceFile = () => {
+    if (voiceFileUrl) {
+      URL.revokeObjectURL(voiceFileUrl);
+    }
+    setVoiceFile(null);
+    setVoiceFileUrl("");
+    setUploadedVoiceUrl("");
+  };
 
   const handleGenerate = async () => {
     if (!text.trim()) {
@@ -40,22 +79,36 @@ const AudioGeneration = () => {
       return;
     }
 
+    if (!uploadedVoiceUrl) {
+      toast({
+        title: "Lỗi",
+        description: "Vui lòng upload file giọng đọc mẫu",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsGenerating(true);
     try {
-      // Simulate audio generation - In production, this would call your TTS API
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // Call TTS API with uploaded voice URL
+      const result = await ttsApi.generate(text, uploadedVoiceUrl);
       
-      // For demo purposes, create a simple audio blob
-      // In production, replace with actual TTS API call
+      setAudioUrl(result.audio_file_url);
+      
+      // Create audio element
+      const audio = new Audio(result.audio_file_url);
+      setAudioElement(audio);
+      
       toast({
-        title: "Thông báo",
-        description: "Tính năng TTS đang được phát triển. Vui lòng tích hợp API TTS.",
+        title: "Thành công",
+        description: "Tạo audio thành công!",
       });
       
     } catch (error) {
+      console.error('TTS Error:', error);
       toast({
         title: "Lỗi",
-        description: "Không thể tạo audio",
+        description: "Không thể tạo audio. Vui lòng kiểm tra server TTS.",
         variant: "destructive",
       });
     } finally {
@@ -111,36 +164,65 @@ const AudioGeneration = () => {
 
           <div className="space-y-4">
             <div>
-              <Label>Giọng đọc</Label>
-              <Select value={selectedVoice} onValueChange={setSelectedVoice}>
-                <SelectTrigger className="mt-2">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {voices.map((voice) => (
-                    <SelectItem key={voice.id} value={voice.id}>
-                      {voice.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label>Tốc độ đọc: {speed[0].toFixed(1)}x</Label>
-              <Slider
-                value={speed}
-                onValueChange={setSpeed}
-                min={0.5}
-                max={2.0}
-                step={0.1}
-                className="mt-2"
-              />
+              <Label>File giọng đọc mẫu</Label>
+              {!voiceFile ? (
+                <div className="mt-2">
+                  <label htmlFor="voice-upload" className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-border bg-muted/50 p-6 transition-colors hover:bg-muted">
+                    {isUploading ? (
+                      <>
+                        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                        <p className="mt-2 text-sm font-medium text-foreground">
+                          Đang upload...
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="h-8 w-8 text-muted-foreground" />
+                        <p className="mt-2 text-sm font-medium text-foreground">
+                          Click để upload file audio
+                        </p>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          MP3, WAV, hoặc các định dạng audio khác
+                        </p>
+                      </>
+                    )}
+                    <Input
+                      id="voice-upload"
+                      type="file"
+                      accept="audio/*"
+                      onChange={handleFileUpload}
+                      className="hidden"
+                      disabled={isUploading}
+                    />
+                  </label>
+                </div>
+              ) : (
+                <div className="mt-2 rounded-lg border border-border bg-muted/50 p-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Mic className="h-4 w-4 text-primary" />
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium">{voiceFile.name}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {(voiceFile.size / 1024 / 1024).toFixed(2)} MB • Đã upload
+                        </span>
+                      </div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={removeVoiceFile}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
 
             <Button
               onClick={handleGenerate}
-              disabled={isGenerating || !text.trim()}
+              disabled={isGenerating || !text.trim() || !uploadedVoiceUrl || isUploading}
               className="w-full"
             >
               {isGenerating ? (
@@ -186,9 +268,9 @@ const AudioGeneration = () => {
           <h4 className="font-medium text-foreground">Hướng dẫn sử dụng</h4>
           <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
             <li>• Nhập văn bản bạn muốn chuyển thành audio</li>
-            <li>• Chọn giọng đọc phù hợp (tiếng Việt hoặc tiếng Anh)</li>
-            <li>• Điều chỉnh tốc độ đọc theo ý muốn</li>
-            <li>• Nhấn "Tạo Audio" để bắt đầu sinh audio</li>
+            <li>• Upload file audio mẫu chứa giọng đọc bạn muốn clone</li>
+            <li>• Nhấn "Tạo Audio" để bắt đầu sinh audio với giọng đọc đã upload</li>
+            <li>• File giọng đọc mẫu nên có chất lượng tốt, rõ ràng và không có nhiễu</li>
           </ul>
         </div>
       </CardContent>

@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { BookOpen, Plus, Edit, Trash2, Search, Upload, X, List, Play, Pause } from "lucide-react";
+import { BookOpen, Plus, Edit, Trash2, Search, Upload, X, List, Play, Pause, ChevronLeft, ChevronRight } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -353,6 +353,8 @@ const BooksManagement = () => {
   const [currentChapterAudios, setCurrentChapterAudios] = useState<any[]>([]);
   const [playingAudioId, setPlayingAudioId] = useState<number | null>(null);
   const [audioElement] = useState(new Audio());
+  const [booksPage, setBooksPage] = useState(0);
+  const booksPerPage = 10;
   const { toast } = useToast();
 
   const loadData = async () => {
@@ -762,8 +764,14 @@ const BooksManagement = () => {
 
   const filteredBooks = books.filter(
     (book) =>
-      book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      book.author.toLowerCase().includes(searchQuery.toLowerCase())
+      book.title.toLowerCase().includes(searchQuery.trim().toLowerCase()) ||
+      book.author.toLowerCase().includes(searchQuery.trim().toLowerCase())
+  );
+
+  const totalBooksPages = Math.ceil(filteredBooks.length / booksPerPage);
+  const paginatedBooks = filteredBooks.slice(
+    booksPage * booksPerPage,
+    (booksPage + 1) * booksPerPage
   );
 
   const getCategoryName = (categoryName?: string) => {
@@ -772,9 +780,10 @@ const BooksManagement = () => {
   };
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="flex items-center gap-2">
+    <>
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
           <BookOpen className="h-5 w-5" />
           Quản lý sách
         </CardTitle>
@@ -815,7 +824,10 @@ const BooksManagement = () => {
             <Input
               placeholder="Tìm kiếm sách..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setBooksPage(0);
+              }}
               className="pl-10"
             />
           </div>
@@ -826,21 +838,22 @@ const BooksManagement = () => {
             <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>STT</TableHead>
-                  <TableHead>Tên sách</TableHead>
-                  <TableHead>Tác giả</TableHead>
-                  <TableHead>Thể loại</TableHead>
-                  <TableHead className="text-right">Thao tác</TableHead>
-                </TableRow>
-              </TableHeader>
+          <>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>STT</TableHead>
+                    <TableHead>Tên sách</TableHead>
+                    <TableHead>Tác giả</TableHead>
+                    <TableHead>Thể loại</TableHead>
+                    <TableHead className="text-right">Thao tác</TableHead>
+                  </TableRow>
+                </TableHeader>
               <TableBody>
-                {filteredBooks.map((book, index) => (
+                {paginatedBooks.map((book, index) => (
                   <TableRow key={book.id}>
-                    <TableCell>{index + 1}</TableCell>
+                    <TableCell>{booksPage * booksPerPage + index + 1}</TableCell>
                     <TableCell className="font-medium">{book.title}</TableCell>
                     <TableCell>{book.author}</TableCell>
                     <TableCell>{getCategoryName(book.category)}</TableCell>
@@ -880,10 +893,44 @@ const BooksManagement = () => {
               </TableBody>
             </Table>
           </div>
+          
+          {totalBooksPages > 1 && (
+            <div className="mt-4 flex items-center justify-between">
+              <p className="text-sm text-muted-foreground">
+                Hiển thị {booksPage * booksPerPage + 1} - {Math.min((booksPage + 1) * booksPerPage, filteredBooks.length)} trong tổng số {filteredBooks.length} sách
+              </p>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setBooksPage(Math.max(0, booksPage - 1))}
+                  disabled={booksPage === 0}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  Trước
+                </Button>
+                <span className="text-sm">
+                  Trang {booksPage + 1} / {totalBooksPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setBooksPage(Math.min(totalBooksPages - 1, booksPage + 1))}
+                  disabled={booksPage >= totalBooksPages - 1}
+                >
+                  Sau
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          )}
+          </>
         )}
+      </CardContent>
+    </Card>
 
-        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="max-w-2xl">
+    <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+      <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>Chỉnh sửa sách</DialogTitle>
             </DialogHeader>
@@ -1157,8 +1204,7 @@ const BooksManagement = () => {
             </ScrollArea>
           </DialogContent>
         </Dialog>
-      </CardContent>
-    </Card>
+    </>
   );
 };
 

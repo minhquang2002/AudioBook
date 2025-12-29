@@ -5,8 +5,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { BarChart3, Star, BookOpen, TrendingUp, Eye, Trash2, MessageSquare } from "lucide-react";
+import { BarChart3, Star, BookOpen, TrendingUp, Eye, Trash2, MessageSquare, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { useToast } from "@/hooks/use-toast";
 
@@ -28,6 +29,9 @@ const ReviewStatistics = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [loadingReviews, setLoadingReviews] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [booksPage, setBooksPage] = useState(0);
+  const booksPerPage = 10;
   const { toast } = useToast();
 
   useEffect(() => {
@@ -67,6 +71,19 @@ const ReviewStatistics = () => {
       name: book.title.length > 20 ? book.title.substring(0, 20) + "..." : book.title,
       rating: book.rating || 0,
     }));
+
+  // Filter books by search query
+  const filteredBooks = books.filter((book) =>
+    book.title.toLowerCase().includes(searchQuery.trim().toLowerCase()) ||
+    book.author.toLowerCase().includes(searchQuery.trim().toLowerCase())
+  );
+
+  // Pagination for books list
+  const totalBooksPages = Math.ceil(filteredBooks.length / booksPerPage);
+  const paginatedBooks = filteredBooks.slice(
+    booksPage * booksPerPage,
+    (booksPage + 1) * booksPerPage
+  );
 
   const handleViewReviews = async (bookId: number) => {
     try {
@@ -168,6 +185,20 @@ const ReviewStatistics = () => {
               <CardTitle>Thông tin đánh giá</CardTitle>
             </CardHeader>
             <CardContent>
+              <div className="mb-4 flex items-center gap-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    placeholder="Tìm kiếm theo tên sách hoặc tác giả..."
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setBooksPage(0);
+                    }}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
               <div className="rounded-md border">
                 <Table>
                   <TableHeader>
@@ -182,16 +213,16 @@ const ReviewStatistics = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {books.length === 0 ? (
+                    {paginatedBooks.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={7} className="text-center text-muted-foreground">
-                          Không có sách nào
+                          {searchQuery ? "Không tìm thấy sách nào" : "Không có sách nào"}
                         </TableCell>
                       </TableRow>
                     ) : (
-                      books.map((book, index) => (
+                      paginatedBooks.map((book, index) => (
                         <TableRow key={book.id}>
-                          <TableCell className="font-medium">{index + 1}</TableCell>
+                          <TableCell className="font-medium">{booksPage * booksPerPage + index + 1}</TableCell>
                           <TableCell className="max-w-[200px] truncate">{book.title}</TableCell>
                           <TableCell>{book.author}</TableCell>
                           <TableCell>
@@ -229,6 +260,37 @@ const ReviewStatistics = () => {
                   </TableBody>
                 </Table>
               </div>
+              
+              {totalBooksPages > 1 && (
+                <div className="mt-4 flex items-center justify-between">
+                  <p className="text-sm text-muted-foreground">
+                    Hiển thị {booksPage * booksPerPage + 1} - {Math.min((booksPage + 1) * booksPerPage, filteredBooks.length)} trong tổng số {filteredBooks.length} sách
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setBooksPage(Math.max(0, booksPage - 1))}
+                      disabled={booksPage === 0}
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                      Trước
+                    </Button>
+                    <span className="text-sm">
+                      Trang {booksPage + 1} / {totalBooksPages}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setBooksPage(Math.min(totalBooksPages - 1, booksPage + 1))}
+                      disabled={booksPage >= totalBooksPages - 1}
+                    >
+                      Sau
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

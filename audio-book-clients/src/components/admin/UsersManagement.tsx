@@ -9,7 +9,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Edit, Users } from "lucide-react";
+import { Search, Edit, Users, Trash2 } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 const UsersManagement = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -17,6 +18,8 @@ const UsersManagement = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [deletingUser, setDeletingUser] = useState<User | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { toast } = useToast();
 
   const loadUsers = async () => {
@@ -58,6 +61,27 @@ const UsersManagement = () => {
       toast({
         title: "Lỗi",
         description: "Không thể cập nhật người dùng",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    if (!deletingUser) return;
+
+    try {
+      await authApi.deleteUser(deletingUser.username);
+      toast({
+        title: "Thành công",
+        description: "Xóa người dùng thành công",
+      });
+      setIsDeleteDialogOpen(false);
+      setDeletingUser(null);
+      loadUsers();
+    } catch (error) {
+      toast({
+        title: "Lỗi",
+        description: "Không thể xóa người dùng",
         variant: "destructive",
       });
     }
@@ -121,15 +145,16 @@ const UsersManagement = () => {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Dialog open={isEditDialogOpen && editingUser?.username === user.username} onOpenChange={(open) => {
-                        setIsEditDialogOpen(open);
-                        if (open) setEditingUser(user);
-                      }}>
-                        <DialogTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                        </DialogTrigger>
+                      <div className="flex justify-end gap-1">
+                        <Dialog open={isEditDialogOpen && editingUser?.username === user.username} onOpenChange={(open) => {
+                          setIsEditDialogOpen(open);
+                          if (open) setEditingUser(user);
+                        }}>
+                          <DialogTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                          </DialogTrigger>
                         <DialogContent>
                           <DialogHeader>
                             <DialogTitle>Chỉnh sửa người dùng</DialogTitle>
@@ -186,6 +211,17 @@ const UsersManagement = () => {
                           </div>
                         </DialogContent>
                       </Dialog>
+                      <Button 
+                        variant="ghost" 
+                        size="icon"
+                        onClick={() => {
+                          setDeletingUser(user);
+                          setIsDeleteDialogOpen(true);
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -193,6 +229,24 @@ const UsersManagement = () => {
             </Table>
           </div>
         )}
+
+        <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Xác nhận xóa người dùng</AlertDialogTitle>
+              <AlertDialogDescription>
+                Bạn có chắc chắn muốn xóa người dùng <span className="font-semibold">{deletingUser?.username}</span> không? 
+                Hành động này không thể hoàn tác.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setDeletingUser(null)}>Hủy</AlertDialogCancel>
+              <AlertDialogAction onClick={handleDeleteUser} className="bg-destructive hover:bg-destructive/90">
+                Xóa
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </CardContent>
     </Card>
   );
