@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { myAudioApi, uploadApi } from "@/lib/api";
-import { Music, Plus, Play, Pause, Trash2, Upload, Loader2, Mic, Square, Circle } from "lucide-react";
+import { Music, Plus, Play, Pause, Trash2, Upload, Loader2, Mic, Square, Circle, Edit } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 interface AudioItem {
@@ -29,6 +29,9 @@ const MyAudio = () => {
   const [playingId, setPlayingId] = useState<number | null>(null);
   const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingAudio, setEditingAudio] = useState<AudioItem | null>(null);
+  const [editAudioName, setEditAudioName] = useState("");
   const [newAudioName, setNewAudioName] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -134,6 +137,47 @@ const MyAudio = () => {
         description: "Không thể xóa audio",
         variant: "destructive",
       });
+    }
+  };
+
+  const handleEdit = (audio: AudioItem) => {
+    setEditingAudio(audio);
+    setEditAudioName(audio.audio_name);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleUpdateAudio = async () => {
+    if (!editingAudio || !editAudioName.trim()) {
+      toast({
+        title: "Lỗi",
+        description: "Vui lòng nhập tên audio",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      await myAudioApi.update(editingAudio.id, {
+        audio_name: editAudioName,
+        audio_url: editingAudio.audio_url,
+      });
+      toast({
+        title: "Thành công",
+        description: "Đã cập nhật tên audio",
+      });
+      setIsEditDialogOpen(false);
+      setEditingAudio(null);
+      setEditAudioName("");
+      loadAudioList();
+    } catch (error) {
+      toast({
+        title: "Lỗi",
+        description: "Không thể cập nhật audio",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -558,33 +602,77 @@ const MyAudio = () => {
                         <p className="text-sm text-muted-foreground">Audio</p>
                       </div>
                     </div>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Xác nhận xóa</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Bạn có chắc chắn muốn xóa "{audio.audio_name}"?
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Hủy</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDelete(audio.id)}>
-                            Xóa
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                    <div className="flex items-center gap-2">
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        onClick={() => handleEdit(audio)}
+                        className="hover:text-primary"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Xác nhận xóa</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Bạn có chắc chắn muốn xóa "{audio.audio_name}"?
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Hủy</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDelete(audio.id)}>
+                              Xóa
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
             ))}
           </div>
         )}
+
+        {/* Edit Audio Dialog */}
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Chỉnh sửa Audio</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="edit_audio_name">Tên Audio</Label>
+                <Input
+                  id="edit_audio_name"
+                  value={editAudioName}
+                  onChange={(e) => setEditAudioName(e.target.value)}
+                  placeholder="Nhập tên audio..."
+                />
+              </div>
+              <Button 
+                onClick={handleUpdateAudio} 
+                disabled={isUploading || !editAudioName.trim()} 
+                className="w-full"
+              >
+                {isUploading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Đang cập nhật...
+                  </>
+                ) : (
+                  'Cập nhật'
+                )}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </MainLayout>
   );
