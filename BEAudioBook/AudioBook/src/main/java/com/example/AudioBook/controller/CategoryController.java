@@ -7,10 +7,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin(origins = "http://127.0.0.1:8081")
+@CrossOrigin(origins = "${app.cors.allowed-origin}")
 public class CategoryController {
     @Autowired
     private CategoryService categoryService;
+
     @GetMapping("/category/getCategories")
     public ResponseEntity<?> getAllCategory(){
         return ResponseEntity.ok(categoryService.getAll());
@@ -22,8 +23,8 @@ public class CategoryController {
     }
 
     @PutMapping("/category/{id}")
-    public ResponseEntity<?> updateCategory(@PathVariable Long id,@RequestBody CategoryRequest categoryRequest){
-        return ResponseEntity.ok(categoryService.updateCategory(id,categoryRequest));
+    public ResponseEntity<?> updateCategory(@PathVariable Long id, @RequestBody CategoryRequest categoryRequest){
+        return ResponseEntity.ok(categoryService.updateCategory(id, categoryRequest));
     }
 
     @DeleteMapping("/category/{id}")

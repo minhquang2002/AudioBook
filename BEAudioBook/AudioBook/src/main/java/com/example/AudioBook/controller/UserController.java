@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "http://127.0.0.1:8081")
+@CrossOrigin(origins = "${app.cors.allowed-origin}")
 public class UserController {
     @Autowired
     private UserService userService;
@@ -32,34 +32,41 @@ public class UserController {
         }
         return ResponseEntity.ok(statusLogin+"");
     }
+
     @GetMapping("/user/get-user/{username}")
     public ResponseEntity<?> getUser(@PathVariable String username){
         UserResponse userResponse = userService.getUser(username);
         return ResponseEntity.ok(userResponse);
     }
+
     @GetMapping("/user/get-user")
     public ResponseEntity<?> getAll(){
-        List<UserResponse> list = userService.getALl();
+        List<UserResponse> list = userService.getAll();
         return ResponseEntity.ok(list);
     }
+
     @PutMapping("/user/{username}")
-    public ResponseEntity<?> updateUser(@PathVariable String username, @RequestBody UserUpdateRequest userUpdateRequest){
-        return ResponseEntity.ok(userService.updateUser(username,userUpdateRequest));
+    public ResponseEntity<?> updateUser(@PathVariable String username,
+                                        @RequestBody UserUpdateRequest userUpdateRequest){
+        return ResponseEntity.ok(userService.updateUser(username, userUpdateRequest));
     }
 
     @PutMapping("/user/update-profile/{username}")
-    public ResponseEntity<?> updateProfile(@PathVariable String username, @RequestBody UpdateProfileRequest updateProfileRequest){
+    public ResponseEntity<?> updateProfile(@PathVariable String username,
+                                           @RequestBody UpdateProfileRequest updateProfileRequest){
         return ResponseEntity.ok(userService.updateProfile(username, updateProfileRequest));
     }
 
     @PutMapping("/user/change-password/{username}")
-    public ResponseEntity<?> changePassword(@PathVariable String username, @RequestBody ChangePasswordRequest changePasswordRequest){
+    public ResponseEntity<?> changePassword(@PathVariable String username,
+                                            @RequestBody ChangePasswordRequest changePasswordRequest){
         String result = userService.changePassword(username, changePasswordRequest);
         if(result.equals("Old password is incorrect!")){
             return ResponseEntity.badRequest().body(result);
         }
         return ResponseEntity.ok(result);
     }
+
     @DeleteMapping("/user/{username}")
     public ResponseEntity<?> deleteUser(@PathVariable String username){
         return ResponseEntity.ok(userService.deleteUser(username));

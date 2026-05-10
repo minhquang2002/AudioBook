@@ -8,7 +8,7 @@ import java.util.List;
 public interface UserService {
     User register(UserDTO userDTO);
     String login(UserLoginRequest userLoginRequest);
-    List<UserResponse> getALl();
+    List<UserResponse> getAll();
     UserResponse getUser(String username);
     String deleteUser(String username);
     String updateUser(String username, UserUpdateRequest userUpdateRequest);

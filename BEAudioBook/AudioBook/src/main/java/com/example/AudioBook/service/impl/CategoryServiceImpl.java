@@ -29,6 +29,7 @@ public class CategoryServiceImpl implements CategoryService {
     private ChapterRepository chapterRepository;
     @Autowired
     private AudioRepository audioRepository;
+
     @Override
     public List<CategoryResponseDTO> getAll() {
         List<CategoryResponseDTO> res = new ArrayList<>();
@@ -99,5 +100,4 @@ public class CategoryServiceImpl implements CategoryService {
         categoryRepository.deleteById(id);
         return "Success!";
     }
-
 }

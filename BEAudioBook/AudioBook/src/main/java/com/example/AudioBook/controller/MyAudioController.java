@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin(origins = "http://127.0.0.1:8081")
+@CrossOrigin(origins = "${app.cors.allowed-origin}")
 public class MyAudioController {
     @Autowired
     private MyAudioService myAudioService;
@@ -21,12 +21,14 @@ public class MyAudioController {
     public ResponseEntity<?> getMyAudio(@PathVariable String username){
         return ResponseEntity.ok(myAudioService.getMyAudio(username));
     }
+
     @DeleteMapping("/deleteMyAudio/{id}")
     public ResponseEntity<?> deleteMyAudio(@PathVariable Long id){
         return ResponseEntity.ok(myAudioService.deleteMyAudio(id));
     }
+
     @PutMapping("/updateMyAudio/{id}")
-    public ResponseEntity<?> updateMyAudio(@PathVariable Long id,@RequestBody MyAudioRequest myAudioRequest){
-        return ResponseEntity.ok(myAudioService.updateMyAudio(id,myAudioRequest));
+    public ResponseEntity<?> updateMyAudio(@PathVariable Long id, @RequestBody MyAudioRequest myAudioRequest){
+        return ResponseEntity.ok(myAudioService.updateMyAudio(id, myAudioRequest));
     }
 }
