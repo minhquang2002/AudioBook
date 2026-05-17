@@ -34,7 +34,7 @@ import {
 } from 'lucide-react';
 
 export function Navbar() {
-  const { user, profile, isAuthenticated, isAdmin, logout } = useAuth();
+  const { user, isAuthenticated, isAdmin, logout } = useAuth();
   const navigate = useNavigate();
   const [categories, setCategories] = useState<Category[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -66,8 +66,11 @@ export function Navbar() {
     navigate('/');
   };
 
-  const NavLinks = ({ mobile = false }: { mobile?: boolean }) => (
-    <>
+  const NavLinks = ({ mobile = false }: { mobile?: boolean }) => {
+    if (isAdmin) return null;
+
+    return (
+      <>
       <Link
         to="/"
         className={`flex items-center gap-2 transition-colors hover:text-primary ${
@@ -137,35 +140,40 @@ export function Navbar() {
         <span>Sách</span>
       </Link>
 
-      <Link
-        to="/tts"
-        className={`flex items-center gap-2 transition-colors hover:text-primary ${
-          mobile ? 'py-3 text-foreground' : 'text-secondary-foreground/90 hover:text-secondary-foreground'
-        }`}
-        onClick={() => setIsMobileMenuOpen(false)}
-      >
-        <Mic className="h-4 w-4" />
-        <span>TTS</span>
-      </Link>
+      {!isAdmin && (
+        <>
+          <Link
+            to="/tts"
+            className={`flex items-center gap-2 transition-colors hover:text-primary ${
+              mobile ? 'py-3 text-foreground' : 'text-secondary-foreground/90 hover:text-secondary-foreground'
+            }`}
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            <Mic className="h-4 w-4" />
+            <span>TTS</span>
+          </Link>
 
-      <Link
-        to="/its"
-        className={`flex items-center gap-2 transition-colors hover:text-primary ${
-          mobile ? 'py-3 text-foreground' : 'text-secondary-foreground/90 hover:text-secondary-foreground'
-        }`}
-        onClick={() => setIsMobileMenuOpen(false)}
-      >
-        <Image className="h-4 w-4" />
-        <span>ITS</span>
-      </Link>
-    </>
-  );
+          <Link
+            to="/its"
+            className={`flex items-center gap-2 transition-colors hover:text-primary ${
+              mobile ? 'py-3 text-foreground' : 'text-secondary-foreground/90 hover:text-secondary-foreground'
+            }`}
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            <Image className="h-4 w-4" />
+            <span>ITS</span>
+          </Link>
+        </>
+      )}
+      </>
+    );
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-secondary/20 bg-gradient-nav shadow-md backdrop-blur-sm">
       <nav className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 text-secondary-foreground">
+        <Link to={isAdmin ? "/admin" : "/"} className="flex items-center gap-2 text-secondary-foreground">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
             <BookOpen className="h-5 w-5 text-primary-foreground" />
           </div>
@@ -178,18 +186,20 @@ export function Navbar() {
         </div>
 
         {/* Search Bar */}
-        <form onSubmit={handleSearch} className="hidden md:flex">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <input
-              type="search"
-              placeholder="Tìm kiếm sách hoặc tác giả..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-64 border-secondary/30 bg-secondary/20 pl-10 text-secondary-foreground placeholder:text-secondary-foreground/50 focus:border-primary focus:bg-secondary/30"
-            />
-          </div>
-        </form>
+        {!isAdmin && (
+          <form onSubmit={handleSearch} className="hidden md:flex">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="search"
+                placeholder="Tìm kiếm sách hoặc tác giả..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-64 border-secondary/30 bg-secondary/20 pl-10 text-secondary-foreground placeholder:text-secondary-foreground/50 focus:border-primary focus:bg-secondary/30"
+              />
+            </div>
+          </form>
+        )}
 
         {/* Auth Section */}
         <div className="flex items-center gap-3">
@@ -218,34 +228,38 @@ export function Navbar() {
                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/20">
                       <User className="h-4 w-4 text-primary" />
                     </div>
-                    <span className="hidden md:inline">{profile?.username || user?.email}</span>
+                    <span className="hidden md:inline">{user?.fullname || user?.username || user?.email}</span>
                     <ChevronDown className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                   <div className="px-3 py-2">
-                    <p className="font-medium">{profile?.fullname || profile?.username}</p>
+                    <p className="font-medium">{user?.fullname || user?.username}</p>
                     <p className="text-sm text-muted-foreground">{user?.email}</p>
                   </div>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link to="/profile" className="flex items-center gap-2">
-                      <Settings className="h-4 w-4" />
-                      Hồ Sơ
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/my-audio" className="flex items-center gap-2">
-                      <Music className="h-4 w-4" />
-                      Âm thanh Của Tôi
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/history" className="flex items-center gap-2">
-                      <History className="h-4 w-4" />
-                      Lịch Sử Nghe
-                    </Link>
-                  </DropdownMenuItem>
+                  {!isAdmin && (
+                    <>
+                      <DropdownMenuItem asChild>
+                        <Link to="/profile" className="flex items-center gap-2">
+                          <Settings className="h-4 w-4" />
+                          Hồ Sơ
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/my-audio" className="flex items-center gap-2">
+                          <Music className="h-4 w-4" />
+                          Âm thanh Của Tôi
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/history" className="flex items-center gap-2">
+                          <History className="h-4 w-4" />
+                          Lịch Sử Nghe
+                        </Link>
+                      </DropdownMenuItem>
+                    </>
+                  )}
                   {isAdmin && (
                     <>
                       <DropdownMenuSeparator />
@@ -295,20 +309,24 @@ export function Navbar() {
             <SheetContent side="right" className="w-80">
               <div className="flex flex-col gap-4 pt-8">
                 {/* Mobile Search */}
-                <form onSubmit={handleSearch} className="mb-4">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      type="search"
-                      placeholder="Tìm kiếm sách hoặc tác giả..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                </form>
+                {!isAdmin && (
+                  <>
+                    <form onSubmit={handleSearch} className="mb-4">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                        <Input
+                          type="search"
+                          placeholder="Tìm kiếm sách hoặc tác giả..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="pl-10"
+                        />
+                      </div>
+                    </form>
 
-                <NavLinks mobile />
+                    <NavLinks mobile />
+                  </>
+                )}
 
                 {isAuthenticated && isAdmin && (
                   <Link

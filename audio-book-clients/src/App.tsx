@@ -1,9 +1,10 @@
+import type { ReactNode } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -22,6 +23,15 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+const RequireNonAdmin = ({ children }: { children: ReactNode }) => {
+  const { isAuthenticated, isAdmin, isLoading } = useAuth();
+
+  if (isLoading) return null;
+  if (isAuthenticated && isAdmin) return <Navigate to="/admin" replace />;
+
+  return children;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
@@ -36,13 +46,13 @@ const App = () => (
             <Route path="/books" element={<AllBooks />} />
             <Route path="/book/:id" element={<BookDetail />} />
             <Route path="/category/:id" element={<BookInCategory />} />
-            <Route path="/listen/:id" element={<Listen />} />
-            <Route path="/tts" element={<TTS />} />
-            <Route path="/its" element={<ITS />} />
+            <Route path="/listen/:id" element={<RequireNonAdmin><Listen /></RequireNonAdmin>} />
+            <Route path="/tts" element={<RequireNonAdmin><TTS /></RequireNonAdmin>} />
+            <Route path="/its" element={<RequireNonAdmin><ITS /></RequireNonAdmin>} />
             <Route path="/admin" element={<Admin />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/my-audio" element={<MyAudio />} />
-            <Route path="/history" element={<ListenHistory />} />
+            <Route path="/profile" element={<RequireNonAdmin><Profile /></RequireNonAdmin>} />
+            <Route path="/my-audio" element={<RequireNonAdmin><MyAudio /></RequireNonAdmin>} />
+            <Route path="/history" element={<RequireNonAdmin><ListenHistory /></RequireNonAdmin>} />
             <Route path="/search" element={<SearchResults />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
