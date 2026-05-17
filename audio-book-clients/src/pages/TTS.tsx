@@ -294,6 +294,7 @@ const TTS = () => {
                         min="0"
                         max={duration || 0}
                         value={currentTime}
+                        aria-label="Audio progress"
                         onChange={(e) => {
                           if (audioElement) {
                             audioElement.currentTime = parseFloat(e.target.value);

@@ -44,7 +44,7 @@ const MyAudio = () => {
   const [micPermission, setMicPermission] = useState<'prompt' | 'granted' | 'denied'>('prompt');
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -203,7 +203,7 @@ const MyAudio = () => {
     setIsUploading(true);
     try {
       console.log('Starting upload...', { selectedFile, newAudioName, username: user.username });
-      const audioUrl = await uploadApi.uploadFile(selectedFile);
+      const audioUrl = await uploadApi.uploadAudioFile(selectedFile);
       console.log('Upload successful, URL:', audioUrl);
       
       await myAudioApi.add({
@@ -243,8 +243,8 @@ const MyAudio = () => {
 
     setIsUploading(true);
     try {
-      const file = new File([recordedBlob], `${newAudioName}.webm`, { type: "audio/webm" });
-      const audioUrl = await uploadApi.uploadFile(file);
+      const file = new File([recordedBlob], `${newAudioName}.wav`, { type: "audio/wav" });
+      const audioUrl = await uploadApi.uploadAudioFile(file);
       await myAudioApi.add({
         audio_name: newAudioName,
         audio_url: audioUrl,
@@ -299,7 +299,7 @@ const MyAudio = () => {
       };
 
       mediaRecorder.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: "audio/webm" });
+        const blob = new Blob(chunksRef.current, { type: "audio/wav" });
         setRecordedBlob(blob);
         const url = URL.createObjectURL(blob);
         setRecordedUrl(url);
