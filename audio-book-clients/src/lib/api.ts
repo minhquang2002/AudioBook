@@ -130,6 +130,89 @@ async function apiRequest<T>(
   return response.text() as T;
 }
 
+async function convertAudioFileToWav(file: File): Promise<File> {
+  const lowerName = file.name.toLowerCase();
+  if (file.type === 'audio/wav' && lowerName.endsWith('.wav')) {
+    return file;
+  }
+
+  const arrayBuffer = await file.arrayBuffer();
+  const AudioContextClass = window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+
+  if (!AudioContextClass) {
+    throw new Error('Trình duyệt không hỗ trợ chuyển đổi audio sang WAV');
+  }
+
+  const audioContext = new AudioContextClass();
+
+  try {
+    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer.slice(0));
+    const wavBuffer = audioBufferToWav(audioBuffer);
+    const baseName = file.name.replace(/\.[^.]+$/, '') || 'audio';
+
+    return new File([wavBuffer], `${baseName}.wav`, { type: 'audio/wav' });
+  } finally {
+    await audioContext.close().catch(() => undefined);
+  }
+}
+
+function audioBufferToWav(buffer: AudioBuffer): ArrayBuffer {
+  const numberOfChannels = buffer.numberOfChannels;
+  const sampleRate = buffer.sampleRate;
+  const bytesPerSample = 2;
+  const blockAlign = numberOfChannels * bytesPerSample;
+  const dataLength = buffer.length * blockAlign;
+  const arrayBuffer = new ArrayBuffer(44 + dataLength);
+  const view = new DataView(arrayBuffer);
+
+  const writeString = (offset: number, value: string) => {
+    for (let index = 0; index < value.length; index += 1) {
+      view.setUint8(offset + index, value.charCodeAt(index));
+    }
+  };
+
+  let offset = 0;
+  writeString(offset, 'RIFF');
+  offset += 4;
+  view.setUint32(offset, 36 + dataLength, true);
+  offset += 4;
+  writeString(offset, 'WAVE');
+  offset += 4;
+  writeString(offset, 'fmt ');
+  offset += 4;
+  view.setUint32(offset, 16, true);
+  offset += 4;
+  view.setUint16(offset, 1, true);
+  offset += 2;
+  view.setUint16(offset, numberOfChannels, true);
+  offset += 2;
+  view.setUint32(offset, sampleRate, true);
+  offset += 4;
+  view.setUint32(offset, sampleRate * blockAlign, true);
+  offset += 4;
+  view.setUint16(offset, blockAlign, true);
+  offset += 2;
+  view.setUint16(offset, 16, true);
+  offset += 2;
+  writeString(offset, 'data');
+  offset += 4;
+  view.setUint32(offset, dataLength, true);
+  offset += 4;
+
+  const channelData = Array.from({ length: numberOfChannels }, (_, channelIndex) => buffer.getChannelData(channelIndex));
+
+  for (let sampleIndex = 0; sampleIndex < buffer.length; sampleIndex += 1) {
+    for (let channelIndex = 0; channelIndex < numberOfChannels; channelIndex += 1) {
+      let sample = channelData[channelIndex][sampleIndex];
+      sample = Math.max(-1, Math.min(1, sample));
+      view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
+      offset += 2;
+    }
+  }
+
+  return arrayBuffer;
+}
+
 // Auth API
 export const authApi = {
   login: async (username: string, password: string): Promise<string> => {
@@ -345,6 +428,11 @@ export const uploadApi = {
 
     if (!response.ok) throw new Error('Upload failed');
     return response.text();
+  },
+
+  uploadAudioFile: async (file: File): Promise<string> => {
+    const wavFile = await convertAudioFileToWav(file);
+    return uploadApi.uploadFile(wavFile);
   },
 };
 
