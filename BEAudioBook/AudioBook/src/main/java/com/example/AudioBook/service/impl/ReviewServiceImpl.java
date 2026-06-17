@@ -32,6 +32,7 @@ public class ReviewServiceImpl implements ReviewService {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         return reviewRepository.findByBookId(bookId, pageable);
     }
+
     @Override
     public Review addReview(ReviewRequest reviewRequest) {
         User user = userRepository.findByUsername(reviewRequest.getUsername()).get();

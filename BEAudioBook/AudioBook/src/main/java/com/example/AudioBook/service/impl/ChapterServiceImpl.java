@@ -17,9 +17,9 @@ public class ChapterServiceImpl implements ChapterService {
     private ChapterRepository chapterRepository;
     @Autowired
     private BookRepository bookRepository;
-
     @Autowired
     private AudioRepository audioRepository;
+
     @Override
     public Long addChapter(ChapterRequest chapterRequest) {
         Chapter chapter = new Chapter();

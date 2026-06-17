@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserResponse> getALl() {
+    public List<UserResponse> getAll() {
         List<UserResponse> res = new ArrayList<>();
         List<User> tmp = userRepository.findAll();
         for(User i : tmp){
@@ -121,6 +121,4 @@ public class UserServiceImpl implements UserService {
         }
         return "Old password is incorrect!";
     }
-
-
 }

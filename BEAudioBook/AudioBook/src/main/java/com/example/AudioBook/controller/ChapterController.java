@@ -8,11 +8,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin(origins = "http://127.0.0.1:8081")
+@CrossOrigin(origins = "${app.cors.allowed-origin}")
 public class ChapterController {
-
     @Autowired
     private ChapterService chapterService;
+
     @PostMapping("/chapter")
     public ResponseEntity<?> addChapter(
             @RequestBody ChapterRequest chapterRequest){
@@ -21,8 +21,8 @@ public class ChapterController {
 
     @PutMapping("/chapter/{id}")
     public ResponseEntity<?> updateChapter(@PathVariable Long id,
-            @RequestBody ChapterRequest chapterRequest){
-        return ResponseEntity.ok(chapterService.updateChapter(id,chapterRequest));
+                                           @RequestBody ChapterRequest chapterRequest){
+        return ResponseEntity.ok(chapterService.updateChapter(id, chapterRequest));
     }
 
     @DeleteMapping("/chapter/{id}")

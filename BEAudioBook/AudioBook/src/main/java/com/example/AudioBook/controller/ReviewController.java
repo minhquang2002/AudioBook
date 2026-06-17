@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "http://127.0.0.1:8081")
+@CrossOrigin(origins = "${app.cors.allowed-origin}")
 public class ReviewController {
     @Autowired
     private ReviewService reviewService;
@@ -48,6 +48,4 @@ public class ReviewController {
     public ResponseEntity<?> getStatReviewOfBook(@PathVariable Long bookId){
         return ResponseEntity.ok(reviewService.getStatReviewOfBook(bookId));
     }
-
-    
 }

@@ -52,7 +52,6 @@ public class BookServiceImpl implements BookService {
         return book.getId();
     }
 
-    @Transactional
     @Override
     public List<BookResponse> getAll(Long idCategory, int rating1) {
         List<BookResponse> res = new ArrayList<>();
@@ -144,6 +143,7 @@ public class BookServiceImpl implements BookService {
         res.setChapters(listChapter);
         return res;
     }
+    
     @Transactional
     @Override
     public String deleteBook(Long id) {
